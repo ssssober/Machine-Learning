@@ -13,7 +13,6 @@ using namespace std;
 /*
 *** Function:	距离度量的c++实现
 *** Time:		2021/07/08--
-*** Author:		JIDONG
 *** Platform：	Windows10+VS2013
 *** Result:		---
 *** Website:	基本原理： https://www.cnblogs.com/daniel-D/p/3244718.html
