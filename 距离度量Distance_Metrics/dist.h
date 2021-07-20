@@ -7,6 +7,7 @@
 #include <random>
 #include <cmath>
 #include <ctime>
+#include <set>
 
 using namespace std;
 
@@ -26,9 +27,9 @@ using namespace std;
 6、余弦相似度
 7、皮尔逊相关系数
 8、汉明距离
-9、杰卡德相似系数
+9、杰卡德相似系数/距离
 10、编辑距离
-11、DTW 距离
+11、DTW 距离：序列信号在时间或者速度上不匹配的时候一种衡量相似度的方法，不再给出代码
 12、KL 散度
 
 注：
@@ -36,6 +37,13 @@ using namespace std;
 8、9一起分析；
 */
 
+struct point2d
+{
+	int val1;
+	int val2;
+	int val3;
+	int val4;
+};
 
 struct pointbuff
 {
@@ -48,12 +56,16 @@ class DISTANCE
 {
 public:
 	void Init();  // 2、3、4：初始化(x,y,z)点对
+	
+	void MaDisInit(); // 5、初始化(x, y)点对
 	void DisPlay();//显示所有点对和距离结果
 	void CalEuclideanDis(); //2、欧氏距离调用
 	void CalManhattanDis(); //3、曼哈顿距离调用
 	void CalChebyshevDis(); //4、切比雪夫距离调用
-	void InitStr();  // 8：汉明字符串初始化：非二进制串和二进制串两种
-	void CalHammingDis();  //8、汉明距离调用
+	//void InitStr();  // 8、汉明字符串初始化
+	//void CalHammingDis();  //8、汉明距离调用
+	void CalJaccardSimilarity();//9、杰卡德系数和距离调用
+	int CalEditDis(string, string);  //10、编辑距离定义
 	
 private:
 	vector<pointbuff> test_vec1; // 随机初始化需要计算的点对vec1
@@ -65,6 +77,9 @@ private:
 	double EuclideanDis(pointbuff &, pointbuff &);	//2、欧氏距离定义
 	double ManhattanDis(pointbuff &, pointbuff &);	//3、曼哈顿距离定义
 	double ChebyshevDis(pointbuff &, pointbuff &);  //4、切比雪夫距离定义
-	int HammingDis();  //8、汉明距离定义
-	double JaccardSimilarity(); //9、杰卡德相似系数定义
+	double MahalanobisDis();//5、马氏距离
+	int HammingDis(unsigned, unsigned);  //8、汉明距离定义
+	void JaccardInit(vector<point2d> &, vector<point2d> &); //杰卡德初始化
+	void JaccardSimilarity(point2d &, point2d &, double &, double &); //9、杰卡德相似系数和距离函数定义
+	
 };
