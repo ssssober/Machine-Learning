@@ -1,0 +1,2 @@
+特征有四个：age（年龄）、prescript（症状）、astigmatic（是否散光）、tearRate（眼泪数量） 
+隐形眼镜类别有三类(最后一列)：硬材质(hard)、软材质(soft)、不适合佩戴隐形眼镜(no lenses) 
