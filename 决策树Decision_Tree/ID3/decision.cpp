@@ -1,12 +1,12 @@
 #include "decision.h"
 using namespace DECTREE;
 
-//×Ö·û´®·Ö¸îº¯Êı
+//å­—ç¬¦ä¸²åˆ†å‰²å‡½æ•°
 vector<string> ID3::strSplit(std::string str, std::string pattern)
 {
 	std::string::size_type pos;
 	std::vector<std::string> result;
-	str += pattern;//À©Õ¹×Ö·û´®ÒÔ·½±ã²Ù×÷
+	str += pattern;//æ‰©å±•å­—ç¬¦ä¸²ä»¥æ–¹ä¾¿æ“ä½œ
 	int size = str.size();
 	for (int i = 0; i<size; i++)
 	{
@@ -21,7 +21,7 @@ vector<string> ID3::strSplit(std::string str, std::string pattern)
 	return result;
 }
 
-//¼ÆËãÄ³¶ÔxºÍy³öÏÖ´ÎÊı
+//è®¡ç®—æŸå¯¹xå’Œyå‡ºç°æ¬¡æ•°
 int ID3::calTimes(string x, string y)
 {
 	int lens = vecData[0].size();
@@ -39,17 +39,17 @@ int ID3::calTimes(string x, string y)
 	return num;
 }
 
-//logº¯Êı¼ÆËã (xytimes, xtimes, featureLens)
+//logå‡½æ•°è®¡ç®— (xytimes, xtimes, featureLens)
 inline double ID3::calLog(int num1, int num2)
 {
 	double fp = 1.0 * num1 / num2;
 	return (-1.0)* fp * (log(fp) / log(2));
 }
 
-//³õÊ¼»¯
+//åˆå§‹åŒ–
 void ID3::init(string filepath)
 {
-	// ÔØÈë xxxdata.txt
+	// è½½å…¥ xxxdata.txt
 	std::ifstream list_path(filepath);
 	std::vector<std::string> fileNames;
 	std::string stemp;
@@ -57,31 +57,40 @@ void ID3::init(string filepath)
 	{
 		fileNames.push_back(stemp);
 	}
-	
+
+	//å­˜å…¥vecDataä¸­
 	for (int i = 0; i < fileNames.size(); i++)
 	{
-		vector<string> res = strSplit(fileNames[i], ",");//ÇĞ¸î
+		vector<string> res = strSplit(fileNames[i], ",");//åˆ‡å‰²
 		vecData.push_back(res);
 	}
+
+	//å•ç‹¬å­˜æ ‡ç­¾label
+	int len = vecData[0].size();
+	for (int i = 0; i < vecData.size(); i++)
+	{
+		labSet.insert(vecData[i][len - 1]);
+	}
+
 }
 
-//(&vecSingle) (1)¼ÆËã¸ÃÌØÕ÷±êÇ©¶ÔÓ¦²»Í¬lableµÄ´ÎÊı; (2)¼ÆËã¸ÃÌØÕ÷±êÇ©ÔÚ´ËÌØÕ÷Î¬¶ÈµÄ¸öÊıºÍ±ÈÀı
+//(&vecSingle) (1)è®¡ç®—è¯¥ç‰¹å¾æ ‡ç­¾å¯¹åº”ä¸åŒlableçš„æ¬¡æ•°; (2)è®¡ç®—è¯¥ç‰¹å¾æ ‡ç­¾åœ¨æ­¤ç‰¹å¾ç»´åº¦çš„ä¸ªæ•°å’Œæ¯”ä¾‹
 vector<sinData> ID3::singleTimes()
 {
 	set<string> singleSetX;
 	multiset<string> singleAllX;
 	set<string> singleSetY;
 	int lens = vecData[0].size();
-	//°´ÁĞÍ³¼ÆÃ¿¸öÌØÕ÷X
+	//æŒ‰åˆ—ç»Ÿè®¡æ¯ä¸ªç‰¹å¾X
 	for (int j = 0; j < lens-1; j++)
 	{	
 		for (int i = 0; i < vecData.size(); i++)
 		{
-			singleSetX.insert(vecData[i][j]);//´æÃ¿¸öµ¥Ò»µÄÌØÕ÷X£¨È¥ÖØºóµÄ£©	
-			singleAllX.insert(vecData[i][j]);//´æËùÓĞµÄÌØÕ÷X£¨²»È¥ÖØ£©
+			singleSetX.insert(vecData[i][j]);//å­˜æ¯ä¸ªå•ä¸€çš„ç‰¹å¾Xï¼ˆå»é‡åçš„ï¼‰	
+			singleAllX.insert(vecData[i][j]);//å­˜æ‰€æœ‰çš„ç‰¹å¾Xï¼ˆä¸å»é‡ï¼‰
 		}
 	}
-	//Í³¼ÆÃ¿¸öµ¥Ò»µÄXÔÚ¸ÃÁĞµÄALL XÌØÕ÷ÖĞ³öÏÖµÄ´ÎÊı	
+	//ç»Ÿè®¡æ¯ä¸ªå•ä¸€çš„Xåœ¨è¯¥åˆ—çš„ALL Xç‰¹å¾ä¸­å‡ºç°çš„æ¬¡æ•°	
 	map<string, int> mmap;
 	for (auto xx : singleSetX)
 	{
@@ -93,16 +102,16 @@ vector<sinData> ID3::singleTimes()
 				nums++;
 			}
 		}
-		mmap.insert({xx, nums});//´æÈëÃ¿¸öµ¥Ò»ÌØÕ÷xÒÔ¼°Æä³öÏÖµÄ´ÎÊı
+		mmap.insert({xx, nums});//å­˜å…¥æ¯ä¸ªå•ä¸€ç‰¹å¾xä»¥åŠå…¶å‡ºç°çš„æ¬¡æ•°
 	}
 
-	//µ¥¶ÀÍ³¼Ælabel
+	//å•ç‹¬ç»Ÿè®¡label
 	for (int i = 0; i < vecData.size(); i++)
 	{
 		singleSetY.insert(vecData[i][lens-1]);
 	}
 
-	vector<sinData> vec;// Êı¾İ¸ñÊ½£ºµ¥¸öÌØÕ÷+label+³öÏÖ´ÎÊı
+	vector<sinData> vec;// æ•°æ®æ ¼å¼ï¼šå•ä¸ªç‰¹å¾+label+å‡ºç°æ¬¡æ•°
 	for (auto e : singleSetX)
 	{
 		for (auto f : singleSetY)
@@ -121,29 +130,29 @@ vector<sinData> ID3::singleTimes()
 	return vec;
 }
 
-//ÖØÅÅvecSingle--->vecSingleAll
+//é‡æ’vecSingle--->vecSingleAll
 vector<vector<sinData>> ID3::sortVec()
 {
 	
-	vector<sinData> vecSingle = singleTimes();//¼ÆËã´ÎÊı
+	vector<sinData> vecSingle = singleTimes();//è®¡ç®—æ¬¡æ•°
 	vector<vector<sinData>> vecSingleAll;
 	int len1 = vecData[0].size();
 	int len2 = vecData.size();
 	 
 	set<string> yset;
-	for (int i = 0; i < len2; i++)//°´ÁĞ±éÀú
+	for (int i = 0; i < len2; i++)//æŒ‰åˆ—éå†
 	{
 		yset.insert(vecData[i][len1-1]);
 	}
-	for (int i = 0; i < len1-1; i++)//°´ÁĞ±éÀú
+	for (int i = 0; i < len1-1; i++)//æŒ‰åˆ—éå†
 	{
 		set<string> xset;
 		for (int j = 0; j < len2; j++)
 		{
 			xset.insert(vecData[j][i]);
 		}
-		//°´ÕÕÌØÕ÷³öÏÖµÄ´ÎĞò£¬°´ÁĞ·½ÏòµÄÌØÕ÷ÅÅÁĞvector<sinData>
-		vector<sinData> vv;//°´ÁĞ·½Ïò´æ´¢
+		//æŒ‰ç…§ç‰¹å¾å‡ºç°çš„æ¬¡åºï¼ŒæŒ‰åˆ—æ–¹å‘çš„ç‰¹å¾æ’åˆ—vector<sinData>
+		vector<sinData> vv;//æŒ‰åˆ—æ–¹å‘å­˜å‚¨
 		for (auto xxx : xset)
 		{
 			for (auto yyy : yset)
@@ -161,7 +170,7 @@ vector<vector<sinData>> ID3::sortVec()
 		vv.clear();
 		xset.clear();
 	}
-	//´òÓ¡vecSingleAll
+	//æ‰“å°vecSingleAll
 	/*for (int i = 0; i < vecSingleAll.size(); i++)
 	{
 		for (int j = 0; j < vecSingleAll[i].size(); j++)
@@ -174,10 +183,10 @@ vector<vector<sinData>> ID3::sortVec()
 	return vecSingleAll;
 }
 
-//¼ÆËãĞÅÏ¢ìØ 
+//è®¡ç®—ä¿¡æ¯ç†µ 
 void ID3::calEntropy()
 {
-	vector<vector<sinData>> vecSingleAll = sortVec();//ÖØÅÅ
+	vector<vector<sinData>> vecSingleAll = sortVec();//é‡æ’
 
 	vector<vector<point>> vecSet;
 	int featureLens = vecData.size();
@@ -218,7 +227,7 @@ void ID3::calEntropy()
 			vecSet[i][j].prob = dd*pro;
 		}
 	}
-	//½«ËùÓĞÌØÕ÷µÄĞÅÏ¢ìØ´æÈëvecProb
+	//å°†æ‰€æœ‰ç‰¹å¾çš„ä¿¡æ¯ç†µå­˜å…¥vecProb
 	for (int i = 0; i < vecSet.size(); i++)
 	{
 		float pp = 0.0f;
@@ -231,18 +240,154 @@ void ID3::calEntropy()
 		vecProb.push_back(pp);
 	}
 
-	//vecProb×ösort²Ù×÷
+	//vecProbåšsortæ“ä½œ
 
 
 
 }
 
 
-//Ä³´ÎÊ¹ÓÃÁË¸ÃÌØÕ÷·ÖÍêºó£¬Ö®ºó±ã²»ÔÙÊ¹ÓÃ¸ÃÌØÕ÷£¬ºóĞø²Ù×÷ĞèÒªÏÈ½«¸ÃÖÖÌØÕ÷É¾³ı£¬È»ºó¸üĞÂµÃµ½ĞÂµÄÊı¾İ¼¯£¬ÔÙ¼ÌĞø¼ÆËãĞÂµÄĞÅÏ¢ìØÍùÔÙ½øĞĞ·Ö
-void ID3::decID3()
+//20210817
+//è®¡ç®—æ€»ä½“ä¿¡æ¯ç†µï¼ˆåªè€ƒè™‘æ ‡ç­¾Yå³å¯ï¼‰(æ¯ä¸€æ¬¡å†³ç­–åï¼Œéƒ½è¦é‡æ–°è®¡ç®—å†³ç­–åæ•°æ®çš„æ€»ä½“ä¿¡æ¯ç†µ)
+double ID3::totalEntropy(vector<vector<string>>& vec)
+{
+	//æ¯æ¬¡ç»™ä¸€æ‰¹æ•°æ®çš„æ ‡ç­¾ï¼Œè‡ªåŠ¨è¯†åˆ«æ ‡ç­¾åˆ†ç±»ã€ç»Ÿè®¡æ ‡ç­¾æ¬¡æ•°ã€è®¡ç®—è¯¥æ‰¹æ•°æ®çš„æ€»ä½“ä¿¡æ¯ç†µ
+	set<string> lab;
+	int len = vec[0].size();
+	for (int i = 0; i < vec.size(); i++)
+	{
+		lab.insert(vec[i][len-1]);
+	}
+	map<string, int> labtimeMap;
+	int totaltime = 0;
+	for (auto e : lab)
+	{
+		int num = 0;
+		for (int i = 0; i < vec.size(); i++)
+		{
+			if (e == vec[i][len - 1])
+				num++;
+		}
+		totaltime += num;
+		labtimeMap.insert({e, num});
+	}
+	//æ€»ä½“ä¿¡æ¯ç†µ
+	double totalEntp = 0;
+	map<string, int>::iterator it = labtimeMap.begin();
+	while (it != labtimeMap.end())
+	{
+		//cout << it->first << "ï¼Œ" << it->second << "ï¼š " << calLog(it->second, totaltime) << endl;
+		totalEntp += calLog(it->second, totaltime);
+		it++;
+	}
+	cout << "æ­¤æ—¶æ€»ä½“ä¿¡æ¯ç†µï¼š" << totalEntp << endl;
+	return totalEntp;
+}
+
+
+//å†³ç­–åæ‹†åˆ†æ•°æ®å‡½æ•°
+//æ ¹æ®è¯¥å†³ç­–ç‰¹å¾ä¸‹ç‰¹å¾æ ‡ç­¾çš„æ•°ç›®Nï¼Œæ‹†åˆ†å‡ºNä¸ªå­æ•°æ®é›†ï¼Œæ¯ä¸ªå­æ•°æ®é›†å†æ¬¡è®¡ç®—æ€»ä½“ä¿¡æ¯ç†µå’Œæ¡ä»¶ä¿¡æ¯ç†µï¼Œæ¥ç€è®¡ç®—å¾—åˆ°ä¸‹ä¸€æ¬¡çš„å†³ç­–ç‰¹å¾
+
+
+
+
+//è®¡ç®—ç‰¹å¾æ ‡ç­¾çš„æ¬¡æ•° --å­å‡½æ•°
+//rowè¡¨ç¤ºåˆ—æ•°ä»0å¼€å§‹ï¼Œå–å€¼[0, vecData[0].size()-1]
+map<string, int> ID3::calFeature(vector<vector<string>>& vec, int row)
 {
 	
+	set<string> fealab;//å»é‡çš„å…ƒç´ 
+	for (int i = 0; i < vec.size(); i++)
+	{
+		fealab.insert(vec[i][row]);
+	}
+	map<string, int> labtimeMap;//æŸåˆ—ä¸­æŸä¸ªå…ƒç´ +å…¶åœ¨è¯¥åˆ—çš„å‡ºç°æ¬¡æ•°
+	int totaltime = 0;
+	for (auto e : fealab)
+	{
+		int num = 0;
+		for (int i = 0; i < vec.size(); i++)
+		{
+			if (e == vec[i][row])
+				num++;
+		}
+		totaltime += num;
+		labtimeMap.insert({ e, num });
+	}
+	return labtimeMap;
+}
+
+
+//è®¡ç®—æ¡ä»¶ä¿¡æ¯ç†µ (å¦‚ä½•å­˜å‚¨) vecDataæ”¾ç€ä¸åŠ¨ï¼Œæ¯æ¬¡ä»ä¸­å–å‡ºæ•°æ®è¿›è¡Œæ¡ä»¶ä¿¡æ¯ç†µè®¡ç®—
+//æ³¨ï¼šç¬¬ä¸€æ¬¡å†³ç­–ç‰¹å¾Xå®šä¹‰ä¸ºå†³ç­–æ ‘çš„æ ¹èŠ‚ç‚¹
+void ID3::condEntropy(vector<vector<string>>& vec)
+{
+	
+	//1ã€æŸåˆ—ç‰¹å¾Xçš„æ€»æ•°ç›®ã€æ¯ä¸ªç‰¹å¾æ ‡ç­¾çš„æ•°ç›®
+	int totalSum = vec.size();
+	int len = vec[0].size();
+	vector<entropy> featProb;//å­˜å‚¨æœ€ç»ˆç‰¹å¾æ ‡ç­¾çš„åˆ—æ•°å’Œå…¶ä¿¡æ¯å¢ç›Š
+	double totalEnt = totalEntropy(vec);//æ€»ä½“ä¿¡æ¯ç†µ
+	//è®¡ç®—ç¬¬iåˆ—ç‰¹å¾çš„æ¡ä»¶ä¿¡æ¯ç†µ
+	for (int i = 0; i < vec[0].size()-1; i++)
+	{
+		map<string, int> eachF = calFeature(vec, i);
+		map<string, int>::iterator mit = eachF.begin();
+			
+		sinData fb;
+		vector<sinData> vvv;
+		while (mit != eachF.end())
+		{
+			for (auto e : labSet)
+			{
+				int num = 0;
+				for (int j = 0; j < vec.size(); j++)
+				{
+					/*if (mit->first == vec[j][i] && vec[j][len-1]==e)
+					{
+						num++;
+					}*/
+					num = (mit->first == vec[j][i] && vec[j][len - 1] == e) ? num + 1 : num;
+				}
+				fb.x = mit->first;
+				fb.y = e;
+				fb.xtimes = mit->second;
+				fb.xytimes = num;
+				vvv.push_back(fb);
+			}
+			mit++;
+		}
+
+		double dprob = 0;
+		for (int k = 0; k < vvv.size(); k++)
+		{
+			double p = vvv[k].xtimes / totalSum;
+			dprob += p * calLog(vvv[k].xytimes, vvv[k].xtimes);
+		}
+
+		entropy cc;
+		cc.colum = i;
+		//cc.prob = totalEnt-dprob;//ä¿¡æ¯å¢ç›Š=æ€»ä½“ä¿¡æ¯ç†µ-æ¡ä»¶ä¿¡æ¯ç†µ
+		cc.prob = dprob;//ä¸€åˆ—ç‰¹å¾è®¡ç®—å¾—åˆ°ä¸€ä¸ªæ¡ä»¶ä¿¡æ¯ç†µ
+		featProb.push_back(cc);
+	}
+
+	for (int m = 0; m < featProb.size(); m++)
+	{
+		cout << featProb[m].colum << ", " << featProb[m].prob << endl;
+	}
+
+
 
 }
+
+
+void ID3::functionTest()
+{
+	
+	condEntropy(vecData);
+	
+}
+
 
 
