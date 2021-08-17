@@ -7,9 +7,6 @@ int main()
 	ID3 test;
 	test.init(path);
 	test.calEntropy();
-
-	
-	
+	test.functionTest();	
 	return 0;
-
 }
